@@ -4,20 +4,20 @@ import App from "./App";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { RecoilRoot } from "recoil";
 import { ThemeProvider } from "styled-components";
-import { darkTheme } from "./theme";
+import { theme } from "./theme";
 import { GlobalStyle } from "./GlobalStyle";
 
-const queryClient = new QueryClient();
+const client = new QueryClient();
 
 ReactDOM.render(
   <React.StrictMode>
     <RecoilRoot>
-      <ThemeProvider theme={darkTheme}>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={client}>
+        <ThemeProvider theme={theme}>
           <GlobalStyle />
           <App />
-        </QueryClientProvider>
-      </ThemeProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
     </RecoilRoot>
   </React.StrictMode>,
   document.getElementById("root")
