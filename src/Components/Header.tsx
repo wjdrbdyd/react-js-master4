@@ -185,7 +185,7 @@ const Header = () => {
           <Items>
             <Item>
               <Link to="browse">
-                Browse {browseMatch && <Circle layoutId="circle" />}
+                홈 {browseMatch && <Circle layoutId="circle" />}
               </Link>
             </Item>
             <Item>
