@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useMatch, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useMatch, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { makeImagePath } from "../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,7 +7,13 @@ import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { motion, AnimatePresence, useViewportScroll } from "framer-motion";
 import fallback from "../Img/fallback.png";
-import { IGetMoviesResult, IGetPopTvResult, IPopTv } from "../api";
+import {
+  getMovieDetail,
+  IGetMovieDetailResult,
+  IGetMoviesResult,
+  IGetPopTvResult,
+} from "../api";
+import { useQuery } from "react-query";
 
 const Row = styled(motion.div)`
   display: grid;
@@ -109,6 +115,9 @@ interface ISlider {
   pos: number;
   contentType: string;
 }
+interface IParam {
+  paramId: string;
+}
 const offset = 6;
 const SliderC = ({ data, pos, contentType }: ISlider) => {
   const navigate = useNavigate();
@@ -116,6 +125,8 @@ const SliderC = ({ data, pos, contentType }: ISlider) => {
   const [leaving, setLeaving] = useState(false);
   const [index, setIndex] = useState(0);
 
+  const { paramId } = useParams() as unknown as IParam;
+  console.log(paramId);
   const nextPlease = () => {
     if (data) {
       if (leaving) return;
@@ -136,6 +147,7 @@ const SliderC = ({ data, pos, contentType }: ISlider) => {
       setIndex((prev) => (prev === 0 ? maxIndex : prev - 1));
     }
   };
+
   const onBoxClicked = (itemId: number) => {
     if (contentType === "tv") {
       navigate(`items/tv/${itemId}`);
@@ -143,6 +155,20 @@ const SliderC = ({ data, pos, contentType }: ISlider) => {
       navigate(`items/movie/${itemId}`);
     }
   };
+
+  const { data: movieDetail, refetch } = useQuery<IGetMovieDetailResult>(
+    ["movieDetail", paramId],
+    () => getMovieDetail(+paramId),
+    {
+      refetchOnWindowFocus: false,
+      enabled: false, // needed to handle refetchs manually
+    }
+  );
+
+  useEffect(() => {
+    paramId && refetch();
+  }, [paramId, refetch]);
+
   const toggleLeaving = () => setLeaving((prev) => !prev);
 
   return (
@@ -192,4 +218,4 @@ const SliderC = ({ data, pos, contentType }: ISlider) => {
   );
 };
 
-export default SliderC;
+export default React.memo(SliderC);

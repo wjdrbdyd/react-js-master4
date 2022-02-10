@@ -53,7 +53,7 @@ const Home = () => {
   const navigate = useNavigate();
   const onValid = (data: IUser) => {
     setUser({ ...data });
-    console.log(JSON.stringify(data));
+
     localStorage.setItem("userEmail", JSON.stringify(data.email));
     if (data) {
       navigate("browse");

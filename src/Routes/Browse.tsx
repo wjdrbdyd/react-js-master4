@@ -49,14 +49,17 @@ const Overview = styled.p`
   width: 50%;
 `;
 
-const Overlay = styled.div`
+const Overlay = styled(motion.div)`
   position: fixed;
   top: 0;
   width: 100%;
   height: 100%;
   margin: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  z-index: 1;
 `;
-const BigMovieWrapper = styled(motion.div)`
+const BigMovieWrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
@@ -65,7 +68,6 @@ const BigMovieWrapper = styled(motion.div)`
   background-color: rgba(0, 0, 0, 0.5);
   top: 0;
   left: 0;
-  opacity: 0;
 `;
 const BigMovie = styled(motion.div)`
   position: absolute;
@@ -75,6 +77,7 @@ const BigMovie = styled(motion.div)`
   border-radius: 15px;
   overflow: hidden;
   background-color: ${(props) => props.theme.black.darker};
+  z-index: 10;
 `;
 const BigCover = styled.div`
   width: 100%;
@@ -101,11 +104,10 @@ const Browse = () => {
   const navigate = useNavigate();
   const bigMovieMatch = useMatch("/browse/items/movie/:paramId");
   const bigTvMatch = useMatch("/browse/items/tv/:paramId");
-  const { scrollY } = useViewportScroll();
+
   const { data: movieData, isLoading: movieLoading } =
     useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
-  // const s = useQuery<IGetPopTvResult>(["tv", "popular"], getPopTv);
-  // console.log(s);
+
   const { data: tvData, isLoading: tvLoading } = useQuery<IGetPopTvResult>(
     ["tv", "popular"],
     getPopTv
@@ -156,12 +158,12 @@ const Browse = () => {
           <AnimatePresence>
             {bigMovieMatch || bigTvMatch ? (
               <>
-                <Overlay></Overlay>
-                <BigMovieWrapper
+                <Overlay
                   onClick={onOverlayClick}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                >
+                ></Overlay>
+                <BigMovieWrapper>
                   <BigMovie
                     layoutId={
                       bigMovieMatch

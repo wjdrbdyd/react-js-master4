@@ -7,7 +7,6 @@ export interface IUser {
 
 const userEmail = localStorage.getItem("userEmail") || "";
 
-console.log(`userEmail:${userEmail}`);
 export const userState = atom<IUser>({
   key: "userInfo",
   default: {
