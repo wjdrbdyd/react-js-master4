@@ -49,22 +49,23 @@ const Overview = styled.p`
   width: 50%;
 `;
 
-const Overlay = styled(motion.div)`
+const Overlay = styled.div`
   position: fixed;
   top: 0;
   width: 100%;
   height: 100%;
   margin: auto;
-  opacity: 0;
 `;
-const BigMovieWrapper = styled.div`
+const BigMovieWrapper = styled(motion.div)`
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
   top: 0;
   left: 0;
+  opacity: 0;
 `;
 const BigMovie = styled(motion.div)`
   position: absolute;
@@ -155,12 +156,12 @@ const Browse = () => {
           <AnimatePresence>
             {bigMovieMatch || bigTvMatch ? (
               <>
-                <Overlay
+                <Overlay></Overlay>
+                <BigMovieWrapper
                   onClick={onOverlayClick}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                ></Overlay>
-                <BigMovieWrapper>
+                >
                   <BigMovie
                     layoutId={
                       bigMovieMatch
