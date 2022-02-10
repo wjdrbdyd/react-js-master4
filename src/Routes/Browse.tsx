@@ -34,7 +34,6 @@ const Banner = styled.div<{ bgphoto: string }>`
   flex-direction: column;
   justify-content: center;
   padding: 60px;
-
   background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 1)),
     url(${(props) => props.bgphoto});
   background-size: cover;
@@ -55,19 +54,26 @@ const Overlay = styled(motion.div)`
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  margin: auto;
   opacity: 0;
+`;
+const BigMovieWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
 `;
 const BigMovie = styled(motion.div)`
   position: absolute;
-  width: 40vw;
+  width: 45vw;
   height: 80vh;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
+  top: 2em;
   border-radius: 15px;
   overflow: hidden;
-  background-color: ${(props) => props.theme.black.lighter};
+  background-color: ${(props) => props.theme.black.darker};
 `;
 const BigCover = styled.div`
   width: 100%;
@@ -154,33 +160,34 @@ const Browse = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 ></Overlay>
-                <BigMovie
-                  style={{ top: scrollY.get() + 100 }}
-                  layoutId={
-                    bigMovieMatch
-                      ? bigMovieMatch.params.paramId
-                      : bigTvMatch?.params.paramId
-                  }
-                >
-                  {clickMovie && (
-                    <>
-                      <BigCover
-                        style={{
-                          backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(
-                            String(clickMovie.backdrop_path),
-                            "w500"
-                          )})`,
-                        }}
-                      />
-                      <BigTitle>
-                        {"title" in clickMovie
-                          ? clickMovie.title
-                          : clickMovie.name}
-                      </BigTitle>
-                      <BigOverView>{clickMovie.overview}</BigOverView>
-                    </>
-                  )}
-                </BigMovie>
+                <BigMovieWrapper>
+                  <BigMovie
+                    layoutId={
+                      bigMovieMatch
+                        ? bigMovieMatch.params.paramId
+                        : bigTvMatch?.params.paramId
+                    }
+                  >
+                    {clickMovie && (
+                      <>
+                        <BigCover
+                          style={{
+                            backgroundImage: `linear-gradient(to top,#181818,transparent 50%), url(${makeImagePath(
+                              String(clickMovie.backdrop_path),
+                              "w500"
+                            )})`,
+                          }}
+                        />
+                        <BigTitle>
+                          {"title" in clickMovie
+                            ? clickMovie.title
+                            : clickMovie.name}
+                        </BigTitle>
+                        <BigOverView>{clickMovie.overview}</BigOverView>
+                      </>
+                    )}
+                  </BigMovie>
+                </BigMovieWrapper>
               </>
             ) : null}
           </AnimatePresence>

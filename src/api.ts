@@ -56,3 +56,8 @@ export function getMovies() {
     `${BASE_PATH}/movie/now_playing?api_key=${API_KEY}&language=ko&region=kr`
   ).then((response) => response.json());
 }
+export function getMovie(movieId:number) {
+  return fetch(
+    `${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}&language=ko`
+  ).then((response) => response.json());
+}
