@@ -18,6 +18,8 @@ import { useRecoilValue } from "recoil";
 
 import SliderC from "../Components/SliderC";
 import { makeImagePath } from "../utils";
+import { Rating } from "@mui/material";
+import StarRating from "../Components/StarRating";
 const Wrapper = styled.div`
   background: black;
   padding-bottom: 200px;
@@ -119,35 +121,12 @@ const Spans = styled.div`
 const Span = styled.span`
   font-size: 13px;
   display: block;
-  label {
+  padding: 2px;
+  > label {
     color: ${(props) => props.theme.black.slighter};
   }
-  padding: 2px;
 `;
-const InnerStar = styled.div`
-  &::before {
-    color: #ff9600;
-    content: "\f005\f005\f005\f005\f005";
-    font-family: "Font Awesome 5 free";
-    font-weight: 900;
-  }
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0%;
-  overflow: hidden;
-  white-space: nowrap;
-`;
-const OuterStar = styled.div`
-  &::before {
-    content: "\f005\f005\f005\f005\f005";
-    font-family: "Font Awesome 5 free";
-    font-weight: 900;
-  }
-  position: relative;
-  display: inline-block;
-  color: #cccccc;
-`;
+
 const ContentContainer = styled.div`
   position: relative;
   top: -60px;
@@ -252,7 +231,7 @@ const Browse = () => {
                         <BigCover
                           style={{
                             backgroundImage: `linear-gradient(to top,#181818,transparent 50%), url(${makeImagePath(
-                              String(apiItem.backdrop_path),
+                              String(apiItem.backdrop_path) || "",
                               "w500"
                             )})`,
                           }}
@@ -287,19 +266,21 @@ const Browse = () => {
                               <label>장르: </label>
                               {apiItem.genres &&
                                 apiItem.genres!.map((genre, idx) => (
-                                  <>
+                                  <span key={idx}>
                                     {genre.name}
                                     {`${
                                       idx !== apiItem.genres.length - 1
                                         ? ", "
                                         : ""
                                     }`}
-                                  </>
+                                  </span>
                                 ))}
                             </Span>
-                            <Span>
-                              <label>별점: </label>
-                              {apiItem.vote_average}
+                            <Span
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              <label>별점:{"  "}</label>
+                              <StarRating voteAverage={apiItem?.vote_average} />
                             </Span>
                           </Spans>
                         </TitleContainer>

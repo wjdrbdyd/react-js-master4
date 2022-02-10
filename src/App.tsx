@@ -4,6 +4,7 @@ import Home from "./Routes/Home";
 import Browse from "./Routes/Browse";
 import Search from "./Routes/Search";
 import Tv from "./Routes/Tv";
+import StarRating from "./Components/StarRating";
 function App() {
   return (
     <Router>
