@@ -1,0 +1,11 @@
+{
+  "files": {
+    "main.js": "/react-js-master4/static/js/main.b2d03b2f.js",
+    "static/media/fallback.png": "/react-js-master4/static/media/fallback.1eb8f2f3700dea5bc5e9.png",
+    "index.html": "/react-js-master4/index.html",
+    "main.b2d03b2f.js.map": "/react-js-master4/static/js/main.b2d03b2f.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.b2d03b2f.js"
+  ]
+}
