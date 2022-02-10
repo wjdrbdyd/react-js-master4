@@ -9,11 +9,17 @@ import { motion, AnimatePresence, useViewportScroll } from "framer-motion";
 import fallback from "../Img/fallback.png";
 import {
   getMovieDetail,
+  getMovieImage,
+  getTvDetail,
   IGetMovieDetailResult,
   IGetMoviesResult,
   IGetPopTvResult,
+  IGetTvDetailResult,
+  IMovieLogo,
 } from "../api";
 import { useQuery } from "react-query";
+import { movieDetailState, tvDetailState } from "../atoms";
+import { useRecoilState, useSetRecoilState } from "recoil";
 
 const Row = styled(motion.div)`
   display: grid;
@@ -97,8 +103,6 @@ const boxVariants = {
     scale: 1,
   },
   hover: {
-    borderBottomLeftRadius: "0px",
-    borderBottomRightRadius: "0px",
     scale: 1.3,
     y: -40,
     transition: { delay: 0.5, duration: 0.3, type: "tween" },
@@ -124,9 +128,10 @@ const SliderC = ({ data, pos, contentType }: ISlider) => {
   const [back, setBack] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [index, setIndex] = useState(0);
-
+  const setMovieDetail = useSetRecoilState(movieDetailState);
+  const setTvDetail = useSetRecoilState(tvDetailState);
   const { paramId } = useParams() as unknown as IParam;
-  console.log(paramId);
+
   const nextPlease = () => {
     if (data) {
       if (leaving) return;
@@ -156,9 +161,20 @@ const SliderC = ({ data, pos, contentType }: ISlider) => {
     }
   };
 
-  const { data: movieDetail, refetch } = useQuery<IGetMovieDetailResult>(
+  const { data: logoData, refetch: logofetch } = useQuery<IMovieLogo>(
+    ["movieDetail", "logo"],
+    () => getMovieImage(+paramId),
+    { refetchOnWindowFocus: false, enabled: false }
+  );
+
+  const { data: itemApiDetail, refetch } = useQuery<
+    IGetMovieDetailResult | IGetTvDetailResult
+  >(
     ["movieDetail", paramId],
-    () => getMovieDetail(+paramId),
+    () =>
+      contentType === "movie"
+        ? getMovieDetail(+paramId)
+        : getTvDetail(+paramId),
     {
       refetchOnWindowFocus: false,
       enabled: false, // needed to handle refetchs manually
@@ -166,9 +182,20 @@ const SliderC = ({ data, pos, contentType }: ISlider) => {
   );
 
   useEffect(() => {
-    paramId && refetch();
+    if (contentType === "movie") {
+      let copy = itemApiDetail as IGetMovieDetailResult;
+      setMovieDetail({ ...copy, logos: logoData?.logos || [] });
+    } else if (contentType === "tv") {
+      let copy = itemApiDetail as IGetTvDetailResult;
+      setTvDetail({ ...copy });
+    }
+  }, [itemApiDetail, contentType, setMovieDetail, setTvDetail, logoData]);
+
+  useEffect(() => {
+    paramId && refetch() && logofetch();
   }, [paramId, refetch]);
 
+  useEffect(() => {});
   const toggleLeaving = () => setLeaving((prev) => !prev);
 
   return (

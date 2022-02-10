@@ -1,5 +1,5 @@
-const API_KEY = "1ce2ede31dfb944e6fdbbf129a3154a6";
-const BASE_PATH = "https://api.themoviedb.org/3";
+export const API_KEY = "1ce2ede31dfb944e6fdbbf129a3154a6";
+export const BASE_PATH = "https://api.themoviedb.org/3";
 
 interface IProgram {
   id: number;
@@ -120,6 +120,7 @@ export interface IGetTvDetailResult extends IPopTv, ICommonDetail {
   number_of_seasons: number;
   seasons: ISeasons[];
   type: string;
+  logos: IMovieImage[];
 }
 export interface IMovie extends IProgram {
   adult: boolean;
@@ -137,6 +138,7 @@ export interface IGetMovieDetailResult extends IMovie, ICommonDetail {
   imdb_id: string;
   revenue: number;
   runtime: number;
+  logos: IMovieImage[];
 }
 // movie array
 export interface IGetMoviesResult {
@@ -160,6 +162,11 @@ export function getMovies() {
     `${BASE_PATH}/movie/now_playing?api_key=${API_KEY}&language=ko&region=kr`
   ).then((response) => response.json());
 }
+export function getMoiveImg(movieId: number) {
+  return fetch(
+    `${BASE_PATH}/movie/${movieId}/images?api_key=${API_KEY}&language=en`
+  ).then((response) => response.json());
+}
 export function getMovieDetail(movieId: number) {
   return fetch(
     `${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}&language=ko`
@@ -169,4 +176,27 @@ export function getTvDetail(tvId: number) {
   return fetch(`${BASE_PATH}/tv/${tvId}?api_key=${API_KEY}&language=ko`).then(
     (response) => response.json()
   );
+}
+
+export interface IMovieImage {
+  aspect_ratio: number;
+  height: number;
+  iso_639_1: string;
+  file_path: string;
+  vote_average: number;
+  vote_count: number;
+  width: number;
+}
+export interface IMovieLogo {
+  backdrops?: IMovieImage[];
+  id: number;
+  logos?: IMovieImage[];
+  posters?: IMovieImage[];
+}
+export function getMovieImage(id: number) {
+  const ajaxData = fetch(
+    `${BASE_PATH}/movie/${id}/images?api_key=${API_KEY}&language=en`
+  ).then((response) => response.json());
+
+  return ajaxData;
 }

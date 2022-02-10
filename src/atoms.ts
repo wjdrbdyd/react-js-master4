@@ -1,3 +1,4 @@
+import { IGetMovieDetailResult, IGetTvDetailResult } from "./api";
 import { atom, selector } from "recoil";
 
 export interface IUser {
@@ -13,4 +14,13 @@ export const userState = atom<IUser>({
     email: userEmail,
     password: "",
   },
+});
+export const movieDetailState = atom<IGetMovieDetailResult>({
+  key: "movieDetail",
+  default: {} as IGetMovieDetailResult,
+});
+
+export const tvDetailState = atom<IGetTvDetailResult>({
+  key: "tvDetail",
+  default: {} as IGetTvDetailResult,
 });

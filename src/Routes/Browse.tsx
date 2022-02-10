@@ -5,13 +5,15 @@ import { motion, AnimatePresence, useViewportScroll } from "framer-motion";
 import {
   getMovies,
   getPopTv,
+  IGetMovieDetailResult,
   IGetMoviesResult,
   IGetPopTvResult,
+  IGetTvDetailResult,
   IMovie,
 } from "../api";
 
 import { useMatch, useNavigate } from "react-router-dom";
-import { userState } from "../atoms";
+import { movieDetailState, tvDetailState, userState } from "../atoms";
 import { useRecoilValue } from "recoil";
 
 import SliderC from "../Components/SliderC";
@@ -83,21 +85,82 @@ const BigCover = styled.div`
   width: 100%;
   background-size: cover;
   background-position: center center;
+  height: 400px;
+`;
+
+const LogoWrap = styled.div`
+  position: absolute;
+  top: 0;
+  width: 100%;
   height: 350px;
 `;
-const BigTitle = styled.h3`
+const BigLogo = styled.img`
+  src: url(${(props) => props.src});
+  position: absolute;
+  bottom: 10px;
+  padding: 10px 30px;
+`;
+const TitleContainer = styled.div`
+  display: flex;
+  top: -60px;
   color: ${(props) => props.theme.white.lighter};
+  position: relative;
+  justify-content: space-between;
   padding: 20px;
-  font-size: 28px;
+`;
+
+const Spans = styled.div`
+  width: 200px;
+  margin: 7px 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0px 20px;
+`;
+const Span = styled.span`
+  font-size: 13px;
+  display: block;
+  label {
+    color: ${(props) => props.theme.black.slighter};
+  }
+  padding: 2px;
+`;
+const InnerStar = styled.div`
+  &::before {
+    color: #ff9600;
+    content: "\f005\f005\f005\f005\f005";
+    font-family: "Font Awesome 5 free";
+    font-weight: 900;
+  }
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  overflow: hidden;
+  white-space: nowrap;
+`;
+const OuterStar = styled.div`
+  &::before {
+    content: "\f005\f005\f005\f005\f005";
+    font-family: "Font Awesome 5 free";
+    font-weight: 900;
+  }
+  position: relative;
+  display: inline-block;
+  color: #cccccc;
+`;
+const ContentContainer = styled.div`
   position: relative;
   top: -60px;
+  width: 100%;
+  background-color: ${(props) => props.theme.black.darker};
 `;
+
 const BigOverView = styled.p`
-  padding: 20px;
-  position: relative;
-  top: -60px;
+  padding: 0 48px;
+  line-height: 25px;
   color: ${(props) => props.theme.white.lighter};
 `;
+const DetailWrap = styled.div``;
 
 const Browse = () => {
   const user = useRecoilValue(userState);
@@ -132,7 +195,7 @@ const Browse = () => {
 
   const onOverlayClick = () => navigate("/");
 
-  const clickMovie = bigMovieMatch?.params.paramId
+  const clickedItem = bigMovieMatch?.params.paramId
     ? movieData?.results.find(
         (movie) => String(movie.id) === bigMovieMatch?.params.paramId
       )
@@ -140,6 +203,19 @@ const Browse = () => {
       tvData?.results.find(
         (tv) => String(tv.id) === bigTvMatch?.params.paramId
       );
+  const detailMovieItem = useRecoilValue(movieDetailState);
+  const detailTvItem = useRecoilValue(tvDetailState);
+  const [apiItem, setApiItem] = useState<
+    IGetMovieDetailResult | IGetTvDetailResult
+  >();
+
+  useEffect(() => {
+    if (detailMovieItem) {
+      setApiItem({ ...detailMovieItem });
+    } else if (detailTvItem) {
+      setApiItem({ ...detailTvItem });
+    }
+  }, [detailMovieItem, detailTvItem]);
 
   return (
     <Wrapper>
@@ -171,22 +247,66 @@ const Browse = () => {
                         : bigTvMatch?.params.paramId
                     }
                   >
-                    {clickMovie && (
+                    {apiItem && (
                       <>
                         <BigCover
                           style={{
                             backgroundImage: `linear-gradient(to top,#181818,transparent 50%), url(${makeImagePath(
-                              String(clickMovie.backdrop_path),
+                              String(apiItem.backdrop_path),
                               "w500"
                             )})`,
                           }}
                         />
-                        <BigTitle>
-                          {"title" in clickMovie
-                            ? clickMovie.title
-                            : clickMovie.name}
-                        </BigTitle>
-                        <BigOverView>{clickMovie.overview}</BigOverView>
+                        <LogoWrap>
+                          <BigLogo
+                            src={`${makeImagePath(
+                              apiItem &&
+                                apiItem.logos &&
+                                apiItem.logos.length > 0
+                                ? apiItem?.logos[0].file_path
+                                : "",
+                              "w300"
+                            )}`}
+                          ></BigLogo>
+                        </LogoWrap>
+                        <TitleContainer>
+                          <Spans>
+                            <Span>
+                              <label>상영 시간: </label>
+                              {"runtime" in apiItem && apiItem.runtime}분
+                            </Span>
+
+                            <Span>
+                              <label>개봉일: </label>
+                              {"release_date" in apiItem &&
+                                apiItem?.release_date}
+                            </Span>
+                          </Spans>
+                          <Spans>
+                            <Span>
+                              <label>장르: </label>
+                              {apiItem.genres &&
+                                apiItem.genres!.map((genre, idx) => (
+                                  <>
+                                    {genre.name}
+                                    {`${
+                                      idx !== apiItem.genres.length - 1
+                                        ? ", "
+                                        : ""
+                                    }`}
+                                  </>
+                                ))}
+                            </Span>
+                            <Span>
+                              <label>별점: </label>
+                              {apiItem.vote_average}
+                            </Span>
+                          </Spans>
+                        </TitleContainer>
+                        <ContentContainer>
+                          <BigOverView>{apiItem.overview}</BigOverView>
+                          <DetailWrap></DetailWrap>
+                        </ContentContainer>
                       </>
                     )}
                   </BigMovie>
