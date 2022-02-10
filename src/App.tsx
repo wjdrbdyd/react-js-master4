@@ -6,7 +6,8 @@ import Search from "./Routes/Search";
 import Tv from "./Routes/Tv";
 function App() {
   return (
-    <Router>
+    <Router basename={`${process.env.PUBLIC_URL}`}>
+      {/* <Router> */}
       <Header></Header>
       <Routes>
         <Route path="/tv" element={<Tv />}></Route>
